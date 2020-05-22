@@ -27,22 +27,16 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     private let memeTextAttributes: [NSAttributedString.Key: Any] = [
         NSAttributedString.Key.strokeColor: UIColor.black,
         NSAttributedString.Key.foregroundColor: UIColor.white,
-        NSAttributedString.Key.font: UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!
+        NSAttributedString.Key.font: UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
+        NSAttributedString.Key.strokeWidth: -4.0
     ]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        topTextField.delegate = self
-        bottomTextField.delegate = self
-        
-        topTextField.defaultTextAttributes = memeTextAttributes
-        bottomTextField.defaultTextAttributes = memeTextAttributes
-        
+        setupTextField(textField: topTextField)
+        setupTextField(textField: bottomTextField)
         reset()
-        
-        topTextField.textAlignment = .center
-        bottomTextField.textAlignment = .center
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -52,6 +46,14 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     override func viewWillDisappear(_ animated: Bool) {
         unsubscribeFromKeyboardNotifications()
+    }
+    
+    fileprivate func setupTextField(textField: UITextField) {
+        textField.defaultTextAttributes = memeTextAttributes
+        textField.textColor = .white
+        textField.tintColor = .white
+        textField.textAlignment = .center
+        textField.delegate = self
     }
 
     fileprivate func openImagePicker(sourceType: UIImagePickerController.SourceType) {
