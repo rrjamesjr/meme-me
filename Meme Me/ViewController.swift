@@ -22,6 +22,7 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     private var topEdited: Bool = false
     private var bottomEdited: Bool = false
     private var bottomFieldActive: Bool = false
+    private var createdMemes: [Meme] = [Meme]()
     
     private let memeTextAttributes: [NSAttributedString.Key: Any] = [
         NSAttributedString.Key.strokeColor: UIColor.black,
@@ -100,7 +101,8 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     }
     
     fileprivate func saveMeme(memedImage: UIImage) {
-        _ = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: imagePickerView.image!, memedImage: memedImage)
+        let meme = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: imagePickerView.image!, memedImage: memedImage)
+        createdMemes.append(meme)
     }
     
     @IBAction func reset(_ sender: Any) {
