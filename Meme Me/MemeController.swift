@@ -28,7 +28,7 @@ class MemeController: UIViewController {
     
     func viewDetails(_ indexPath: IndexPath) {
         let detailController = self.storyboard!.instantiateViewController(withIdentifier: "MemeDetailViewController") as! MemeDetailViewController
-        detailController.memeImageView.image = memes[(indexPath as NSIndexPath).row].memedImage
+        detailController.meme = memes[(indexPath as NSIndexPath).row]
         self.navigationController!.pushViewController(detailController, animated: true)
     }
 }
