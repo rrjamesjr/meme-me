@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate {
+class MemeEditorViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate {
 
     @IBOutlet weak var imagePickerView: UIImageView!
     @IBOutlet weak var cameraButton: UIBarButtonItem!
@@ -18,11 +18,10 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     @IBOutlet weak var bottomToolbar: UIToolbar!
     @IBOutlet weak var topToolBar: UIToolbar!
     @IBOutlet weak var shareButton: UIBarButtonItem!
-    
+        
     private var topEdited: Bool = false
     private var bottomEdited: Bool = false
     private var bottomFieldActive: Bool = false
-    private var createdMemes: [Meme] = [Meme]()
     
     private let memeTextAttributes: [NSAttributedString.Key: Any] = [
         NSAttributedString.Key.strokeColor: UIColor.black,
@@ -30,13 +29,16 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         NSAttributedString.Key.font: UIFont(name: "HelveticaNeue-CondensedBlack", size: 40)!,
         NSAttributedString.Key.strokeWidth: -4.0
     ]
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        setupTextField(textField: topTextField)
-        setupTextField(textField: bottomTextField)
+        setupTextField(textField: topTextField, text: "TOP")
+        setupTextField(textField: bottomTextField, text: "BOTTOM")
         reset()
+        if let navigationController = navigationController {
+            navigationController.navigationBar.isHidden = true
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -48,12 +50,13 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         unsubscribeFromKeyboardNotifications()
     }
     
-    fileprivate func setupTextField(textField: UITextField) {
+    fileprivate func setupTextField(textField: UITextField, text: String) {
         textField.defaultTextAttributes = memeTextAttributes
         textField.textColor = .white
         textField.tintColor = .white
         textField.textAlignment = .center
         textField.delegate = self
+        textField.text = text
     }
 
     fileprivate func openImagePicker(sourceType: UIImagePickerController.SourceType) {
@@ -88,11 +91,11 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
         let image = generateMemedImage()
         let controller = UIActivityViewController(activityItems: [image], applicationActivities: nil)
         
-        controller.completionWithItemsHandler = {
+        controller.completionWithItemsHandler = {[weak image]
           (activity, success, items, error) in
             if(success && error == nil){
                 //Do Work
-                self.saveMeme(memedImage: items?[0] as! UIImage)
+                self.saveMeme(memedImage: image! as UIImage)
             }
             else if (error != nil){
                 //log the error
@@ -104,11 +107,15 @@ class ViewController: UIViewController, UIImagePickerControllerDelegate, UINavig
     
     fileprivate func saveMeme(memedImage: UIImage) {
         let meme = Meme(topText: topTextField.text!, bottomText: bottomTextField.text!, originalImage: imagePickerView.image!, memedImage: memedImage)
-        createdMemes.append(meme)
+        
+        let object = UIApplication.shared.delegate
+        let appDelegate = object as! AppDelegate
+        appDelegate.memes.append(meme)
     }
     
     @IBAction func reset(_ sender: Any) {
         reset()
+        dismiss(animated: true, completion: nil)
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
